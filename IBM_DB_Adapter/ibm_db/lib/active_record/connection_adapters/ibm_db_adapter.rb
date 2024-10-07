@@ -1721,7 +1721,7 @@ module ActiveRecord
       # ReturnsTrue on success and False on Failure
       def execute_prepared_stmt(pstmt, param_array = nil)
         #mtech debug
-        puts "PSTMT: #{pstmt}"
+        puts "PSTMT: #{pstmt.inspect}"
         puts "Param array = #{param_array}"
 
         puts_log 'execute_prepared_stmt'
