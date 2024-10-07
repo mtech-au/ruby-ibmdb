@@ -1549,6 +1549,7 @@ module ActiveRecord
         insert_values = []
         params = []
         if @servertype.instance_of? IBM_IDS
+            puts_log("Servier type is #{@servertype.as_json}") #mtech
           super
           return
         end
@@ -2963,7 +2964,7 @@ module ActiveRecord
       end
 
       def table_comment(table_name) # :nodoc:
-        return unless @servertype.instance_of? IBM_IDS
+        return unless @servertype.instance_of? IBM_IDS #mtech
 
         puts_log 'table_comment'
         
@@ -3007,7 +3008,7 @@ module ActiveRecord
             conditions << "tabname = #{quote(name.upcase)}" if name
             sql << " #{conditions.join(' AND ')}"
           end
-          # sql << " AND owner = #{quote(@schema.upcase)}"
+          # sql << " AND owner = #{quote(@schema.upcase)}"  #mtech
           sql << " AND owner = #{quote(@schema)}"
         else
           sql = +'SELECT tabname FROM (SELECT tabname, type FROM syscat.tables '
