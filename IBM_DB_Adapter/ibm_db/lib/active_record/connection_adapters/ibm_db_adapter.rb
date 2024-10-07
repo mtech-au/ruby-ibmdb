@@ -1549,7 +1549,6 @@ module ActiveRecord
         insert_values = []
         params = []
         if @servertype.instance_of? IBM_IDS
-            puts_log("Servier type is #{@servertype.as_json}") #mtech
           super
           return
         end
@@ -2508,12 +2507,15 @@ module ActiveRecord
               end
 
               next if is_composite
-
-              sql = "select remarks from syscat.indexes where tabname = #{quote(table_name.upcase)} and indname = #{quote(index_stats[5])}"
-              comment = single_value_from_rows(select_prepared(sql, "SCHEMA").rows)
-
-              indexes << IndexDefinition.new(table_name, index_name, index_unique, index_columns,
+            
+              if @servertype.instance_of? IBM_IDS #mtech
+                indexes << IndexDefinition.new(table_name, index_name, index_unique, index_columns)
+              else
+                sql = "select remarks from syscat.indexes where tabname = #{quote(table_name.upcase)} and indname = #{quote(index_stats[5])}"
+                comment = single_value_from_rows(select_prepared(sql, "SCHEMA").rows)
+                indexes << IndexDefinition.new(table_name, index_name, index_unique, index_columns,
                                              comment: comment)
+              end
               index_schema << index_qualifier
             end
           rescue StandardError => e # Handle driver fetch errors
@@ -2964,7 +2966,6 @@ module ActiveRecord
       end
 
       def table_comment(table_name) # :nodoc:
-        puts "Server Type: #{@servertype.inspect}" #mtech
         if @servertype.instance_of? IBM_IDS #mtech
         
         else
@@ -3075,7 +3076,6 @@ module ActiveRecord
       end
 
       def table_options(table_name) # :nodoc:
-        puts 'table_options'        #mtech
         puts_log 'table_options'
         return unless comment = table_comment(table_name)
 
