@@ -2963,7 +2963,10 @@ module ActiveRecord
       end
 
       def table_comment(table_name) # :nodoc:
+        return unless @servertype.instance_of? IBM_IDS
+
         puts_log 'table_comment'
+        
         sql = "select remarks from syscat.tables where tabname = #{quote(table_name.upcase)}"
         single_value_from_rows(select_prepared(sql).rows)
       end
