@@ -2964,12 +2964,15 @@ module ActiveRecord
       end
 
       def table_comment(table_name) # :nodoc:
-        return unless @servertype.instance_of? IBM_IDS #mtech
-
-        puts_log 'table_comment'
+        puts "Server Type: #{@servertype.inspect}" #mtech
+        if @servertype.instance_of? IBM_IDS #mtech
         
-        sql = "select remarks from syscat.tables where tabname = #{quote(table_name.upcase)}"
-        single_value_from_rows(select_prepared(sql).rows)
+        else
+            puts_log 'table_comment'
+        
+            sql = "select remarks from syscat.tables where tabname = #{quote(table_name.upcase)}"
+            single_value_from_rows(select_prepared(sql).rows)
+        end
       end
 
       def add_index(table_name, column_name, **options) # :nodoc:
@@ -3072,6 +3075,7 @@ module ActiveRecord
       end
 
       def table_options(table_name) # :nodoc:
+        puts 'table_options'        #mtech
         puts_log 'table_options'
         return unless comment = table_comment(table_name)
 
