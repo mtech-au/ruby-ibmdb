@@ -2675,7 +2675,7 @@ module ActiveRecord
                               @servertype.set_case(table_name))
         #       sql = "select * from sysibm.sqlcolumns where table_name = #{quote(table_name.upcase)}"
         if @debug == true
-         puts_log stmt.to_s.gsub(/"SYSIBM"."BLOB"\('(.*)'\)/i, '\1') #mtech
+         puts_log "HERE: #{stmt.binary_to_string}"
           sql = "select * from syscat.columns  where tabname = #{quote(table_name.upcase)}"
           puts_log "SYSIBM.SQLCOLUMNS = #{select_prepared(sql).rows}"
         end
