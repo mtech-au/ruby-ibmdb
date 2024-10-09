@@ -2669,11 +2669,16 @@ module ActiveRecord
 
         # +columns+ will contain the resulting array
         columns = []
-        # Statement required to access all the columns information
-        stmt = IBM_DB.columns(@connection, nil,
-                              @servertype.set_case(@schema),
-                              @servertype.set_case(table_name))
-        #       sql = "select * from sysibm.sqlcolumns where table_name = #{quote(table_name.upcase)}"
+        if @servertype.instance_of? IBM_IDS #mtech
+          stmt = ""
+        else
+          # Statement required to access all the columns information
+          stmt = IBM_DB.columns(@connection, nil,
+                                @servertype.set_case(@schema),
+                                @servertype.set_case(table_name))
+          #       sql = "select * from sysibm.sqlcolumns where table_name = #{quote(table_name.upcase)}"
+        end
+
         if @debug == true
          puts_log "HERE: #{stmt.binary_to_string}"
           sql = "select * from syscat.columns  where tabname = #{quote(table_name.upcase)}"
