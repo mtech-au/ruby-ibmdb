@@ -1720,10 +1720,6 @@ module ActiveRecord
       # Executes the prepared statement
       # ReturnsTrue on success and False on Failure
       def execute_prepared_stmt(pstmt, param_array = nil)
-        #mtech debug
-        puts "PSTMT: #{pstmt.inspect}"
-        puts "Param array = #{param_array}"
-
         puts_log 'execute_prepared_stmt'
         puts_log "Param array = #{param_array}"
         param_array = nil if !param_array.nil? && param_array.size < 1
@@ -2670,13 +2666,16 @@ module ActiveRecord
         # +columns+ will contain the resulting array
         columns = []
         if @servertype.instance_of? IBM_IDS #mtech
-          sql = "select *
+          sql = "select sc.*
                 from syscolumns as sc
                 inner join systables as st
                   on sc.tabid = st.tabid
-                where st.tabname = #{quote(table_name.upcase)}"
-          stmt = select_prepared(sql)
-          puts_log "SYSIBM.SQLCOLUMNS = #{stmt.rows}"
+                where st.tabname = #{quote(table_name)}"
+          # stmt = select_prepared(sql)
+          # puts "stmt = #{stmt.as_json}"
+          stmt = IBM_DB.columns(@connection, nil,
+                                @schema,
+                                table_name)
         else
           # Statement required to access all the columns information
           stmt = IBM_DB.columns(@connection, nil,
@@ -2686,9 +2685,9 @@ module ActiveRecord
         end
 
         if @debug == true
-         puts_log "HERE: #{stmt.binary_to_string}"
-          sql = "select * from syscat.columns  where tabname = #{quote(table_name.upcase)}"
-          puts_log "SYSIBM.SQLCOLUMNS = #{select_prepared(sql).rows}"
+          # sql = "select * from syscat.columns  where tabname = #{quote(table_name.upcase)}"
+          # puts_log "SYSIBM.SQLCOLUMNS = #{select_prepared(sql).rows}"
+          puts_log "SYSIBM.SQLCOLUMNS = #{IBM_DB.execute(stmt)}"
         end
 
         if stmt
