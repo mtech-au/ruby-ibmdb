@@ -2670,7 +2670,13 @@ module ActiveRecord
         # +columns+ will contain the resulting array
         columns = []
         if @servertype.instance_of? IBM_IDS #mtech
-          stmt = ''
+          sql = "select *
+                from syscolumns as sc
+                inner join systables as st
+                  on sc.tabid = st.tabid
+                where st.tabname = #{quote(table_name.upcase)}"
+          stmt = select_prepared(sql)
+          puts_log "SYSIBM.SQLCOLUMNS = #{stmt.rows}"
         else
           # Statement required to access all the columns information
           stmt = IBM_DB.columns(@connection, nil,
