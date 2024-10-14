@@ -2687,7 +2687,6 @@ module ActiveRecord
         if @debug == true
           # sql = "select * from syscat.columns  where tabname = #{quote(table_name.upcase)}"
           # puts_log "SYSIBM.SQLCOLUMNS = #{select_prepared(sql).rows}"
-          puts_log "SYSIBM.SQLCOLUMNS = #{IBM_DB.execute(stmt)}"
         end
 
         if stmt
@@ -3410,12 +3409,24 @@ module ActiveRecord
         else
           schema_name = @schema
         end
+
+        if @servertype.instance_of? IBM_IDS #mtech
+          unique_info = internal_exec_query(<<~SQL, "SCHEMA")
+          SELECT 
+          SELECT KEYCOL.CONSTNAME, KEYCOL.COLNAME FROM SYSCAT.KEYCOLUSE KEYCOL
+              INNER JOIN SYSCAT.TABCONST TABCONST ON KEYCOL.CONSTNAME=TABCONST.CONSTNAME
+              WHERE TABCONST.TABSCHEMA=#{quote(schema_name.upcase)} and
+              TABCONST.TABNAME=#{quote(table_name.upcase)} and TABCONST.TYPE='U'
+        SQL 
+          
+          else
         unique_info = internal_exec_query(<<~SQL, "SCHEMA")
           SELECT KEYCOL.CONSTNAME, KEYCOL.COLNAME FROM SYSCAT.KEYCOLUSE KEYCOL
               INNER JOIN SYSCAT.TABCONST TABCONST ON KEYCOL.CONSTNAME=TABCONST.CONSTNAME
               WHERE TABCONST.TABSCHEMA=#{quote(schema_name.upcase)} and
               TABCONST.TABNAME=#{quote(table_name.upcase)} and TABCONST.TYPE='U'
         SQL
+        end
 
         puts_log "unique_constraints unique_info = #{unique_info.columns}, #{unique_info.rows}"
         unique_info.map do |row|
