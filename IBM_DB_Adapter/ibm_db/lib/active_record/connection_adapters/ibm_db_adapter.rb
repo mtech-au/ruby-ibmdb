@@ -2670,7 +2670,7 @@ module ActiveRecord
         # +columns+ will contain the resulting array
         columns = []
         if @servertype.instance_of? IBM_IDS #mtech
-          stmt = ""
+          stmt = ''
         else
           # Statement required to access all the columns information
           stmt = IBM_DB.columns(@connection, nil,
