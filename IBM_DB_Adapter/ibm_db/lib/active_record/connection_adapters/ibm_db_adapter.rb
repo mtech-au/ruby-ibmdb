@@ -2516,6 +2516,7 @@ module ActiveRecord
               next if is_composite
 
               if @servertype.instance_of? IBM_IDS # mtech
+                # No syscat/comments for IDS
                 indexes << IndexDefinition.new(table_name, index_name, index_unique, index_columns)
               else
                 sql = "select remarks from syscat.indexes where tabname = #{quote(table_name.upcase)} and indname = #{quote(index_stats[5])}"
@@ -2982,7 +2983,7 @@ module ActiveRecord
 
       def table_comment(table_name) # :nodoc:
         if @servertype.instance_of? IBM_IDS # mtech
-
+          # No syscat/comments for IDS
         else
           puts_log 'table_comment'
 
@@ -3415,15 +3416,12 @@ module ActiveRecord
 
         unique_info = if @servertype.instance_of? IBM_IDS # mtech
                         internal_exec_query(<<~SQL, 'SCHEMA')
-            SELECT scon.constrname constname, sc.colname colname
-            FROM sysconstraints scon 
-            		INNER JOIN systables st
-            			ON scon.tabid = st.tabid
-            		INNER JOIN syscoldepend sd
-            			ON scon.constrid = sd.constrid AND scon.tabid = sd.tabid
-            	 	INNER JOIN syscolumns sc
-            	 		ON sd.tabid = sc.tabid AND sd.colno = sc.colno
-            WHERE st.tabname = #{quote(table_name)} AND scon.constrtype = 'U';
+                          SELECT scon.constrname constname, sc.colname colname
+                          FROM sysconstraints scon 
+                          		INNER JOIN systables st ON scon.tabid = st.tabid
+                          		INNER JOIN syscoldepend sd ON scon.constrid = sd.constrid AND scon.tabid = sd.tabid
+                          	 	INNER JOIN syscolumns sc ON sd.tabid = sc.tabid AND sd.colno = sc.colno
+                          WHERE st.tabname = #{quote(table_name)} AND scon.constrtype = 'U';
                         SQL
                       else
                         internal_exec_query(<<~SQL, "SCHEMA")
@@ -3433,9 +3431,6 @@ module ActiveRecord
                               TABCONST.TABNAME=#{quote(table_name.upcase)} and TABCONST.TYPE='U'
                         SQL
                       end
-
-        #mtech debug
-        puts unique_info.as_json
 
         puts_log "unique_constraints unique_info = #{unique_info.columns}, #{unique_info.rows}"
         unique_info.map do |row|
