@@ -3411,7 +3411,13 @@ module ActiveRecord
         end
 
         if @servertype.instance_of? IBM_IDS #mtech
-
+          unique_info = internal_exec_query(<<~SQL, "SCHEMA")
+            SELECT sx.idxname constname, sc.colname colname FROM sysindices sx
+		            INNER JOIN systables st on sx.tabid = st.tabid
+	 	            INNER JOIN syscolumns sc on sx.tabid = sc.tabid 
+	 	                AND regex_match(indexkeys::lvarchar,concat('(^| )',concat(sc.colno,' \[')))
+                            WHERE	st.tabname = "adhoccharts1" AND sx.idxtype = 'U'
+        SQL
           
           else
         unique_info = internal_exec_query(<<~SQL, "SCHEMA")
