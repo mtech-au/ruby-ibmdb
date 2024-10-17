@@ -3022,14 +3022,13 @@ module ActiveRecord
         puts_log "servertype = #{@servertype}"
         if @servertype.instance_of? IBM_IDS
           sql = "SELECT tabname FROM systables WHERE"
+          sql << " owner = #{quote(@schema)}"
           if type || name
             conditions = []
             conditions << "tabtype = #{quote(type.upcase)}" if type
             conditions << "tabname = #{quote(name.upcase)}" if name
             sql << " #{conditions.join(' AND ')}"
           end
-          # sql << " AND owner = #{quote(@schema.upcase)}"  #mtech
-          sql << " AND owner = #{quote(@schema)}"
         else
           sql = +'SELECT tabname FROM (SELECT tabname, type FROM syscat.tables '
           sql << " WHERE tabschema = #{quote(@schema.upcase)}) subquery"
