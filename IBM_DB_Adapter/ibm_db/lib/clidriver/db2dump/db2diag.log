@@ -56,3 +56,10 @@ INSTANCE: DB2                  NODE : 000
 HOSTNAME: a6fc4bf2af14
 FUNCTION: DB2 UDB, common communication, sqlcctcpconnr, probe:110
 MESSAGE : DIA3202C The TCP/IP call "connect" returned an errno="111".
+
+2024-10-30-08.31.48.484405+000 I2834E332             LEVEL: Error
+PID     : 75                   TID : 140737469151168 PROC : ruby
+INSTANCE: DB2                  NODE : 000
+HOSTNAME: a6fc4bf2af14
+FUNCTION: DB2 UDB, common communication, sqlcctcpconnr, probe:110
+MESSAGE : DIA3202C The TCP/IP call "connect" returned an errno="111".
