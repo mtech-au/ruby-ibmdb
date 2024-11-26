@@ -118,7 +118,7 @@ module ActiveRecord
       private
 
       def visit_TableDefinition(o)
-        return super unless @conn.class == IBM_DBAdapter # mtech - crashes PostgreSQLAdapter
+        # return super unless @conn.class == IBM_DBAdapter # mtech - crashes PostgreSQLAdapter
 
         create_sql = +"CREATE#{table_modifier_in_create(o)} TABLE "
         create_sql << 'IF NOT EXISTS ' if o.if_not_exists
