@@ -17,7 +17,7 @@
 **              Error Message Retrieval Interface
 **              Authorization Constants
 ** 
-** Operating System: LINUX
+** Operating System: Darwin
 ** 
 *******************************************************************************/
 #ifndef SQL_H_SQL
@@ -130,6 +130,9 @@ extern "C" {
 #define SQL_REL11010202        11010202 /* V11.1.2.2                          */
 #define SQL_REL11010303        11010303 /* V11.1.3.3                          */
 #define SQL_REL11010404        11010404 /* V11.1.4.4                          */
+#define SQL_REL11010405        11010405 /* V11.1.4.5                          */
+#define SQL_REL11010406        11010406 /* V11.1.4.6                          */
+#define SQL_REL11010407        11010407 /* V11.1.4.7                          */
 #define SQL_REL11010900        11010900 /* V11.1.9.0                          */
 #define SQL_REL11050000        11050000 /* V11.5.0.0                          */
 #define SQL_REL11050100        11050100 /* V11.5.1.0                          */
@@ -141,6 +144,7 @@ extern "C" {
 #define SQL_REL11050700        11050700 /* V11.5.7.0                          */
 #define SQL_REL11050800        11050800 /* V11.5.8.0                          */
 #define SQL_REL11050900        11050900 /* V11.5.9.0                          */
+#define SQL_REL12010000        12010000 /* V12.1.0.0                          */
 #define SQL_FUTUREL            99999999 /* Future Release                     */
 
 /* System Constants                                                           */
@@ -278,6 +282,9 @@ extern "C" {
 #define SQL_MN_IDENT           1       /* Minimum length of Identifiers       */
 #define SQL_MAX_VAR_NAME       255     /* Max size of Host Variable Name      */
 #define SQL_MAX_TENANT_ID      300     /* Maximum tenant Identifiers          */
+
+#define SQL_MAX_TRUST_PROC_LENGTH SQL_MAX_IDENT /* Maximum length of a trust  */
+                                       /* procedure name                      */
 
 /* The original 4K define, SQL_PDB_MAP_SIZE, supports old APIs                */
 /* The new 32K define, SQL_PDB_MAP_SIZE_32K, is to be used                    */
@@ -735,9 +742,9 @@ typedef signed short SQL_PDB_DBPARTITION_TYPE;/* Datatype of PDB dbpartition    
 #define SQL_HKBIG5_PC          16      /* Hong Kong Big5 HKSCS                */
 #define SQL_UNKN_PC            255     /* Unknown                             */
 
-/* OEM codeset & locale lengths                                               */
-#define SQL_CODESET_LEN        17
-#define SQL_LOCALE_LEN         33
+/* AIX codeset & locale lengths                                               */
+#define SQL_CODESET_LEN        9
+#define SQL_LOCALE_LEN         5
 
 /* Codeset & locale lengths for sqle_db_territory_info struct                 */
 #define SQL_CODESET_SIZE       17
@@ -2118,8 +2125,8 @@ SQL_STRUCTURE sqlopt
 *******************************************************************************/
 SQL_API_RC SQL_API_FN                      /* Bind                            */
   sqlabndx (
-        _SQLOLDCHAR * pBindFileName,       /* bind file name                  */
-        _SQLOLDCHAR * pMsgFileName,        /* message file                    */
+        const _SQLOLDCHAR * pBindFileName, /* bind file name                  */
+        const _SQLOLDCHAR * pMsgFileName,  /* message file                    */
         struct sqlopt * pBindOptions,      /* bind options                    */
         struct sqlca * pSqlca);            /* SQLCA                           */
 
@@ -2999,7 +3006,7 @@ SQL_API_RC SQL_API_FN                      /* Sqlstate Message Retrieval      */
         char * pBuffer,                    /* buffer for message text         */
         short BufferSize,                  /* buffer size                     */
         short LineWidth,                   /* line width                      */
-        char * pSqlstate);                 /* sqlstate                        */
+        const char * pSqlstate);           /* sqlstate                        */
 
 /* Generic Interface to SQLSTATE Message Retrieval                            */
 /******************************************************************************
